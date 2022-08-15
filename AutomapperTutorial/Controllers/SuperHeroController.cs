@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AutomapperTutorial.Controllers
@@ -29,10 +30,26 @@ namespace AutomapperTutorial.Controllers
             }
         };
 
+        private readonly IMapper _mapper;
+
+        public SuperHeroController(IMapper mapper)
+        {
+            _mapper = mapper;
+        }
+
         [HttpGet]
         public ActionResult<List<SuperHero>> GetHeroes()
         {
-            return heroes;
+            return Ok(heroes.Select(hero => _mapper.Map<SuperHeroDto>(hero)));
+        }
+
+        [HttpPost]
+        public ActionResult<List<SuperHero>> AddHero(SuperHeroDto newHero)
+        {
+            var hero = _mapper.Map<SuperHero>(newHero);
+            heroes.Add(hero);
+
+            return Ok(heroes.Select(hero => _mapper.Map<SuperHeroDto>(hero)));
         }
     }
 }
